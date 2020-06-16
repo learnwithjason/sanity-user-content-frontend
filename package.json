@@ -19,5 +19,8 @@
   "homepage": "https://github.com/jlengstorf/lwj-demo-layout#readme",
   "devDependencies": {
     "@11ty/eleventy": "^0.11.0"
+  },
+  "dependencies": {
+    "@sanity/client": "^1.149.16"
   }
 }

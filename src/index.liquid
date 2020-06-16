@@ -2,55 +2,71 @@
 layout: default
 
 # keep it short! shown in the header
-title: Demo of the Demo
+title: User-Generated Content in Sanity
 
 # these are all optional and add links to the footer
-repo: learnwithjason/demo-base
-episode: https://www.learnwithjason.dev/creating-css-variable-font-text-effects
-tutorial: https://codepen.io/jlengstorf/pen/QWbdLjb
+repo: learnwithjason/sanity-user-content-frontend
+episode:
+tutorial:
 ---
 
-<!-- any HTML we want can go in here, including style and script tags -->
 <style>
-  .wrapper {
-    align-items: center;
-    display: flex;
-    height: 50vh;
-    justify-content: center;
-    min-height: 300px;
-    overflow: hidden;
-  }
-
-  h2 {
-    color: #fff;
-    font-family: mallory, futura, arial black, sans-serif;
-    font-size: 22vw;
-    font-weight: 800;
-    letter-spacing: -0.1em;
-    line-height: 1.4;
-    padding: 0 0.25em;
-    text-shadow: 0.1vw 0.1vw #4f4f4f55, 0.1vw -0.1vw #4f4f4f55,
-      -0.1vw 0.1vw #4f4f4f55, -0.1vw -0.1vw #4f4f4f55;
-  }
-
-  @supports ((-webkit-background-clip: text) and (-webkit-text-stroke: 5vw)) {
-    h2 {
-      background: linear-gradient(160deg, #d459ab 0%, #ffdf37 50%, #a6fffa 90%);
-      -webkit-background-clip: text;
-      -webkit-text-stroke: 3.25vw transparent;
-    }
-  }
-
-  @media (min-width: 1000px) {
-    h2 {
-      font-size: 220px;
-      -webkit-text-stroke: 32.5px transparent;
-    }
+  img {
+    width: 100%;
   }
 </style>
 
-<h1>This Is a Demo of the Demo</h1>
+<h1>User-Generated Content in Sanity</h1>
 
-<div class="wrapper">
-  <h2 contenteditable spellcheck="false">boop.</h2>
+{% for corgi in corgis %}
+<div class="corgi">
+  <img
+    src="{{ corgi.corgiImage.asset.url }}"
+    alt="{{ corgi.corgiImage.asset.creditLine }}"
+  />
+  <h2>Suggested Names</h2>
+  <ul>
+    {% for name in corgi.suggestedNames %}
+    <li>
+      <form>
+        {{ name.name }} — <span class="votes">{{ name.votes }}</span> votes
+        <input type="hidden" name="corgiId" value="{{ corgi._id }}" />
+        <input type="hidden" name="nameKey" value="{{ name._key }}" />
+        <button>
+          Vote For This Name
+        </button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
 </div>
+{% endfor %}
+
+<script>
+  async function sendVote(event) {
+    event.preventDefault();
+
+    const data = new FormData(event.target);
+
+    const corgiId = data.get('corgiId');
+    const nameKey = data.get('nameKey');
+
+    const result = await fetch('/.netlify/functions/vote-for-name', {
+      method: 'POST',
+      body: JSON.stringify({ corgiId, nameKey }),
+    })
+      .then((res) => res.json())
+      .catch((err) => console.error(err));
+
+    console.log(result);
+
+    const voteNode = event.target.querySelector('.votes');
+    voteNode.innerText = result.totalVotes;
+  }
+
+  const forms = document.querySelectorAll('form');
+
+  forms.forEach((form) => {
+    form.addEventListener('submit', sendVote);
+  });
+</script>
