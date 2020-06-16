@@ -21,6 +21,8 @@
 
 Can a CMS handle all the requirements of a full-blown app? Espen Hovlandsdal teaches us how to use Sanity and Netlify Functions to handle user input in Jamstack apps!
 
+## NOTE: The back-end for this demo is in [a different repo](https://github.com/learnwithjason/sanity-user-content)
+
 &nbsp;
 
 ## More Information
